@@ -5,7 +5,7 @@ const db = admin.firestore();
 
 // Create a new league
 router.post('/', async (req, res) => {
-    const { name, description, startDate, endDate } = req.body;
+    const { name, description, startDate, endDate, maxTeams } = req.body;
   
     if (!name || !startDate || !endDate) {
       return res.status(400).send('Name, startDate, and endDate are required');
@@ -26,6 +26,7 @@ router.post('/', async (req, res) => {
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         startDate: start, // Store as Date object
         endDate: end,     // Store as Date object
+        maxTeams
       });
   
       res.status(201).send(`League added with ID: ${docRef.id}`);
