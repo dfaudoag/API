@@ -79,6 +79,48 @@ router.get('/:leagueId/matches', async (req, res) => {
   }
 });
 
+router.get('/:leagueId/matches/upcoming', async (req, res) => {
+    const { leagueId } = req.params;
+    const now = new Date();
+
+    try {
+        const matchesSnapshot = await db.collection('leagues').doc(leagueId).collection('matches')
+            .where('startDate', '>', now)
+            .get();
+        const matches = matchesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Fetch team names for each match from the teams subcollection
+        const matchesWithTeamNames = await Promise.all(matches.map(async (match) => {
+            const team1Id = match.teams[0];
+            const team2Id = match.teams[1];
+
+            // Query the teams from the teams subcollection under the same league
+            const team1Doc = await db.collection('leagues').doc(leagueId).collection('teams').doc(team1Id).get();
+            const team2Doc = await db.collection('leagues').doc(leagueId).collection('teams').doc(team2Id).get();
+
+            const team1Name = team1Doc.exists ? team1Doc.data().name : 'Unknown Team';
+            const team2Name = team2Doc.exists ? team2Doc.data().name : 'Unknown Team';
+
+            const startDate = match.startDate.toDate();
+            const createdAt = match.createdAt.toDate();
+
+            return {
+                ...match,
+                teams: {
+                    team1: { id: team1Id, name: team1Name },
+                    team2: { id: team2Id, name: team2Name }
+                },
+                startDate: startDate.toISOString(), 
+                createdAt: createdAt.toISOString()
+            };
+        }));
+
+        res.status(200).json(matchesWithTeamNames);
+    } catch (error) {
+        res.status(500).send(`Error fetching upcoming matches: ${error}`);
+    }
+});
+
 // Update a matches date, score or place in a specific league
 router.put('/:leagueId/matches/:matchId', async (req, res) => {
     const { leagueId, matchId } = req.params;
