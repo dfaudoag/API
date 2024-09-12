@@ -1,5 +1,6 @@
 const express = require('express');
 const admin = require('firebase-admin');
+const cors = require('cors');
 const serviceAccount = require('./serviceAccountKey.json');
 
 // Initialize Firebase
@@ -8,6 +9,7 @@ admin.initializeApp({
 });
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Import route files
