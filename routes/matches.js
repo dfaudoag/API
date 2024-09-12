@@ -79,5 +79,39 @@ router.get('/:leagueId/matches', async (req, res) => {
   }
 });
 
+// Update a matches date, score or place in a specific league
+router.put('/:leagueId/matches/:matchId', async (req, res) => {
+    const { leagueId, matchId } = req.params;
+    const { startDate, score, place } = req.body;
+  
+    // Validate input
+    if (!startDate && !score && !place) {
+      return res.status(400).send('At least one of startDate, score, or place must be provided.');
+    }
+  
+    try {
+      const matchRef = db.collection('leagues').doc(leagueId).collection('matches').doc(matchId);
+  
+      // Prepare update object
+      const updateData = {};
+      if (startDate) {
+        updateData.startDate = new Date(startDate); // Convert to Date object
+      }
+      if (score) {
+        updateData.score = score; // Assume score is an object like { team1: 2, team2: 3 }
+      }
+      if (place) {
+        updateData.place = place; // Update place
+      }
+  
+      // Update match
+      await matchRef.update(updateData);
+  
+      res.status(200).send(`Match ${matchId} updated`);
+    } catch (error) {
+      res.status(500).send(`Error updating match: ${error}`);
+    }
+  });
+  
 module.exports = router;
 
