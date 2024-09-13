@@ -2,8 +2,6 @@
 node_modules/
 
 # Firebase service account key
-
-
 # Environment variables file
 .env
 
