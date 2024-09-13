@@ -3,7 +3,6 @@ const router = express.Router();
 const admin = require('firebase-admin');
 const db = admin.firestore();
 
-// Create a match in a specific league
 // Create a new match in a specific league
 router.post('/:leagueId/matches', async (req, res) => {
     const { leagueId } = req.params;
