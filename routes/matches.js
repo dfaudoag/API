@@ -5,6 +5,7 @@ const db = admin.firestore();
 
 // Create a new match in a specific league
 router.post('/:leagueId/matches', async (req, res) => {
+    console.log('Request body:', req.body);
     const { leagueId } = req.params;
     const { teams, startDate, place, score } = req.body;
 
