@@ -6,7 +6,7 @@ const db = admin.firestore();
 // Create a new team in a specific league
 router.post('/:leagueId/teams', async (req, res) => {
   const { leagueId } = req.params;
-  const { name , imgurl} = req.body;
+  const { name } = req.body;
 
   if (!name) {
     return res.status(400).send('Team name is required');
@@ -16,7 +16,6 @@ router.post('/:leagueId/teams', async (req, res) => {
     const teamRef = await db.collection('leagues').doc(leagueId).collection('teams').add({
       name,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      imgurl,
     });
 
     res.status(201).send(`Team added with ID: ${teamRef.id}`);
