@@ -1,6 +1,8 @@
 const express = require('express');
 const admin = require('firebase-admin');
 const cors = require('cors');
+require('dotenv').config();  // Load environment variables from .env file if needed
+
 const serviceAccount = {
   type: process.env.FIREBASE_TYPE,
   project_id: process.env.FIREBASE_PROJECT_ID,
@@ -14,7 +16,7 @@ const serviceAccount = {
   client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
 };
 
-// Initialize Firebase
+// Initialize Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -23,15 +25,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Import route files
-const leaguesRouter = require('./routes/leagues');
-const teamsRouter = require('./routes/teams'); 
-const matchesRouter = require('./routes/matches'); 
+// Sample route
+app.get('/test', (req, res) => {
+  res.send('API is working correctly');
+});
 
-// Use routes
+// Your actual routes
+const leaguesRouter = require('./routes/leagues');
+const teamsRouter = require('./routes/teams');
+const matchesRouter = require('./routes/matches');
+
 app.use('/leagues', leaguesRouter);
-app.use('/leagues', teamsRouter);  
-app.use('/leagues', matchesRouter); 
+app.use('/teams', teamsRouter);
+app.use('/matches', matchesRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
